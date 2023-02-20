@@ -20,18 +20,18 @@ def log(msg):
         print(msg)
 
 # Load the chess piece images
-wp = pygame.image.load("wp.png")
-wr = pygame.image.load("wr.png")
-wn = pygame.image.load("wn.png")
-wb = pygame.image.load("wb.png")
-wq = pygame.image.load("wq.png")
-wk = pygame.image.load("wk.png")
-bp = pygame.image.load("bp.png")
-br = pygame.image.load("br.png")
-bn = pygame.image.load("bn.png")
-bb = pygame.image.load("bb.png")
-bq = pygame.image.load("bq.png")
-bk = pygame.image.load("bk.png")
+wp = pygame.image.load("assets/wp.png")
+wr = pygame.image.load("assets/wr.png")
+wn = pygame.image.load("assets/wn.png")
+wb = pygame.image.load("assets/wb.png")
+wq = pygame.image.load("assets/wq.png")
+wk = pygame.image.load("assets/wk.png")
+bp = pygame.image.load("assets/bp.png")
+br = pygame.image.load("assets/br.png")
+bn = pygame.image.load("assets/bn.png")
+bb = pygame.image.load("assets/bb.png")
+bq = pygame.image.load("assets/bq.png")
+bk = pygame.image.load("assets/bk.png")
 
 # Create a dictionary to map piece names to their images
 piece_images = {
@@ -58,7 +58,7 @@ pieces = [
     "", "", "", "", "", "", "", "",
     "", "", "", "", "", "", "", "",
     "wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp",
-    "wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr",
+    "wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"
 ]
 
 def print_board():
