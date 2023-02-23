@@ -143,6 +143,16 @@ while True:
             if piece_name != "" and (( piece_name[0]=="w" and isWhite ) or ( piece_name[0]=="b" and not isWhite )):
                 if piece_name[1] == "p":
                     possible_positions = utils.move_pawn(piece_name, pieces, board_x, board_y)
+                elif piece_name[1] == "b":
+                    possible_positions = utils.move_bishop(piece_name, pieces, board_x, board_y)
+                elif piece_name[1] == "r":
+                    possible_positions = utils.move_rook(piece_name, pieces, board_x, board_y)
+                elif piece_name[1] == "q":
+                    possible_positions = utils.move_queen(piece_name, pieces, board_x, board_y)
+                elif piece_name[1] == "k":
+                    possible_positions = utils.move_king(piece_name, pieces, board_x, board_y)
+                elif piece_name[1] == "n":
+                    possible_positions = utils.move_knight(piece_name, pieces, board_x, board_y)
                 current_piece = piece_name
                 current_piece_position = piece_position
 
