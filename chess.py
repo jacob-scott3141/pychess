@@ -1,4 +1,5 @@
 import pygame
+import utils
 
 # Initialize Pygame
 pygame.init()
@@ -34,6 +35,9 @@ bb = pygame.image.load("assets/bb.png")
 bq = pygame.image.load("assets/bq.png")
 bk = pygame.image.load("assets/bk.png")
 
+circle = pygame.image.load("assets/circle.png")
+circles = []
+
 # Create a dictionary to map piece names to their images
 piece_images = {
     "wp": wp,
@@ -62,16 +66,7 @@ pieces = [
     "wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"
 ]
 
-def print_board():
-    s = ""
-    for i in range(8):
-        for j in range(8):
-            p = pieces[i * 8 + j]
-            if p == "":
-                p = "  "
-            s += p + " "
-        s += "\n"
-    return s
+
 
 # Define the size of the chess squares
 square_size = board_size / 8
@@ -112,12 +107,16 @@ def draw():
                 label = font.render(chr(j + 97), True, black)
                 screen.blit(label, (x + square_size / 2 - 10, y + square_size + 10))
 
+    for c in circles:
+        screen.blit(circle, c)
+
 # Update the display
 pygame.display.flip()
 
 # Define variables for tracking the current piece and its position
 current_piece = None
 current_piece_position = None
+possible_positions = []
 
 # Define variables for tracking player turn
 isWhite = True
@@ -140,13 +139,19 @@ while True:
             piece_name = pieces[board_y * 8 + board_x]
             piece_position = (board_x, board_y)
 
-            # Can move?
-            canMove = (piece_name[0]=="w" and isWhite ) or (piece_name[0]=="b" and not isWhite )
-
             # If there is a piece at the mouse position, pick it up
-            if piece_name != "" and canMove:
+            if piece_name != "" and (( piece_name[0]=="w" and isWhite ) or ( piece_name[0]=="b" and not isWhite )):
+                if piece_name[1] == "p":
+                    possible_positions = utils.move_pawn(piece_name, pieces, board_x, board_y)
                 current_piece = piece_name
                 current_piece_position = piece_position
+
+                for pp in possible_positions:
+                    c_x, c_y = pp
+                    print("cx and cy", c_x, c_y)
+                    piece_rect = circle.get_rect()
+                    piece_rect.center = (c_x * square_size + square_size / 2, c_y * square_size + square_size / 2)
+                    circles.append(piece_rect)
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # If there is a current piece, try to move it to the new position
@@ -161,18 +166,21 @@ while True:
                 new_piece_name = pieces[board_y * 8 + board_x]
                 new_piece_position = (board_x, board_y)
 
-                # If there is no piece at the new position, move the current piece there
-                if new_piece_name == "":
-                    pieces[board_y * 8 + board_x] = current_piece
-                    pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
-                    log("moved piece")
-                    isWhite = not isWhite
-                # Otherwise, if there is an enemy piece at the new position, capture it and move the current piece there
-                elif current_piece[0] != new_piece_name[0]:
-                    pieces[board_y * 8 + board_x] = current_piece
-                    pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
-                    log("taken piece")
-                    isWhite = not isWhite
+                if (board_x, board_y) in possible_positions:
+                    # If there is no piece at the new position, move the current piece there
+                    if new_piece_name == "":
+                        pieces[board_y * 8 + board_x] = current_piece
+                        pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
+                        log("moved piece")
+                        isWhite = not isWhite
+                        
+                    # Otherwise, if there is an enemy piece at the new position, capture it and move the current piece there
+                    elif current_piece[0] != new_piece_name[0]:
+                        pieces[board_y * 8 + board_x] = current_piece
+                        pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
+                        log("taken piece")
+                        isWhite = not isWhite
+                        
                 # Otherwise, move the current piece back to its original position
                 else:
                     pieces[current_piece_position[1] * 8 + current_piece_position[0]] = current_piece
@@ -180,7 +188,9 @@ while True:
                 # Clear the current piece
                 current_piece = None
                 current_piece_position = None
-                log(print_board())
+                circles = []
+                possible_positions = []
+                log(utils.print_board(pieces))
 
     draw()
                 
