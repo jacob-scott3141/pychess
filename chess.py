@@ -117,6 +117,9 @@ current_piece = None
 current_piece_position = None
 possible_positions = []
 en_passant = (None, None, None)
+castle = [(None, None, None), (None, None, None)]
+white_castle = [True, True]
+black_castle = [True, True]
 
 # Define variables for tracking player turn
 isWhite = True
@@ -150,7 +153,8 @@ while True:
                 elif piece_name[1] == "q":
                     possible_positions = utils.move_queen(piece_name, pieces, board_x, board_y)
                 elif piece_name[1] == "k":
-                    possible_positions = utils.move_king(piece_name, pieces, board_x, board_y)
+                    castle_state = white_castle if isWhite else black_castle
+                    possible_positions, castle = utils.move_king(piece_name, pieces, board_x, board_y, castle_state)
                 elif piece_name[1] == "n":
                     possible_positions = utils.move_knight(piece_name, pieces, board_x, board_y)
                 current_piece = piece_name
@@ -182,7 +186,41 @@ while True:
                     pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
                     last_move = (current_piece, current_piece_position, new_piece_position)
 
-                    # Check for en passant
+                    # Check castling
+                    if isWhite:
+                        if white_castle[0] and current_piece == "wr" and current_piece_position == (7,7):
+                            white_castle[0] = False
+                        elif white_castle[1] and current_piece == "wr" and current_piece_position == (0,7):
+                            white_castle[1] = False
+                        elif (white_castle[0] and white_castle[1]) and current_piece == "wk":
+                            white_castle = (False, False)
+                    else:
+                        if black_castle[0] and current_piece == "br" and current_piece_position == (7,0):
+                            black_castle[0] = False
+                        if black_castle[1] and current_piece == "br" and current_piece_position == (0,0):
+                            black_castle[1] = False
+                        elif (black_castle[0] and black_castle[1]) and current_piece == "bk":
+                            black_castle = (False, False)
+
+                    # Move rook if king side castling
+                    if castle[0] == last_move:
+                        if isWhite:
+                            pieces[7 * 8 + 5] = "wr"
+                            pieces[7 * 8 + 7] = ""
+                        else:
+                            pieces[0 * 8 + 5] = "br"
+                            pieces[0 * 8 + 7] = ""
+
+                    # Move rook if queen side castling
+                    if castle[1] == last_move:
+                        if isWhite:
+                            pieces[7 * 8 + 3] = "wr"
+                            pieces[7 * 8 + 0] = ""
+                        else:
+                            pieces[0 * 8 + 3] = "br"
+                            pieces[0 * 8 + 0] = ""
+
+                    # Take pawn if en passant
                     if en_passant == last_move:
                         if isWhite:
                             pieces[(board_y + 1) * 8 + board_x] = ""

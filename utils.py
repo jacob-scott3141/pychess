@@ -78,7 +78,26 @@ def move_pawn(piece_name, pieces, x, y, last_move):
                 possible_moves.append((x+1, y+1))
         return possible_moves, en_passant
 
-def move_king(piece_name, pieces, x, y):
+def check_ksc(piece_name, pieces):
+    ksc = [(5, 7), (6, 7)] if piece_name[0] == "w" else [(5, 0), (6, 0)]
+        
+    # Check that the spaces are free
+    for p_x, p_y in ksc:
+        if get_piece_at(p_x, p_y, pieces) != "":
+            return None
+    return ksc[1]
+
+def check_qsc(piece_name, pieces):
+    qsc = [(1, 7), (2, 7),(3, 7)] if piece_name[0] == "w" else [(1, 0), (2, 0), (3, 0)]
+        
+    # Check that the spaces are free
+    for p_x, p_y in qsc:
+        if get_piece_at(p_x, p_y, pieces) != "":
+            return None
+    return qsc[1]
+
+def move_king(piece_name, pieces, x, y, castle_state):
+    castle = [(None, None, None), (None, None, None)]
     # King
     possible_moves = []
     king_moves = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
@@ -88,7 +107,22 @@ def move_king(piece_name, pieces, x, y):
         if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
             if pieces[new_y * 8 + new_x] == "" or pieces[new_y * 8 + new_x][0] != piece_name[0]:
                 possible_moves.append((new_x, new_y))
-    return possible_moves
+
+    # Check king side castle
+    if castle_state[0]:
+        ksc = check_ksc(piece_name, pieces)
+        if ksc is not None:
+            possible_moves.append(ksc)
+            castle[0] = (piece_name, (x, y), ksc)
+
+    # Check queen side castle
+    if castle_state[1]:
+        qsc = check_qsc(piece_name, pieces)
+        if qsc is not None:
+            possible_moves.append(qsc)
+            castle[1] = (piece_name, (x, y), qsc)
+            
+    return possible_moves, castle
 
 def move_knight(piece_name, pieces, x, y):
     possible_moves = []
