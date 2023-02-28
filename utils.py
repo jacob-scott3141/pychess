@@ -17,6 +17,67 @@ def is_opposition(piece, oppo):
         return True
     return False
 
+def move_pawn(piece_name, pieces, x, y, last_move):
+    en_passant = (None, None, None)
+    # Determine the type of piece
+    if piece_name == "wp":
+        # White pawn
+        possible_moves = []
+
+        last_piece, last_position_from, last_position_to = last_move
+        if last_piece == "bp" and last_position_from[1] == 1 and last_position_to[1] == 3 and y == 3 and (x == last_position_to[0] + 1 or x == last_position_to[0] - 1):
+            en_passant = ("wp", (x, y), (last_position_to[0], 2))
+            print("en passant: ", en_passant)
+            possible_moves.append((last_position_to[0], 2))
+        if y > 0 and get_piece_at(x, y-1, pieces) == "":
+            # The pawn can move one square forward
+            possible_moves.append((x, y-1))
+            
+            if y == 6:
+                # If the pawn is on its starting square, it can move two squares forward
+                if get_piece_at(x, y-2, pieces) == "":
+                    possible_moves.append((x, y-2))
+        if x > 0 and y > 0:
+            take_piece = get_piece_at(x-1, y-1, pieces)
+            if take_piece != "" and take_piece[0] == "b":
+                # The pawn can capture an enemy piece to its left
+                possible_moves.append((x-1, y-1))
+        if x < 7 and y > 0:
+            take_piece = get_piece_at(x+1, y-1, pieces)
+            if take_piece != "" and take_piece[0] == "b":
+                # The pawn can capture an enemy piece to its left
+                possible_moves.append((x+1, y-1))
+        return possible_moves, en_passant
+
+    elif piece_name == "bp":
+        # Black pawn
+        possible_moves = []
+
+        last_piece, last_position_from, last_position_to = last_move
+        if last_piece == "wp" and last_position_from[1] == 6 and last_position_to[1] == 4 and y == 4 and (x == last_position_to[0] + 1 or x == last_position_to[0] - 1):
+            en_passant = ("bp", (x, y), (last_position_to[0], 5))
+            print(en_passant)
+            possible_moves.append((last_position_to[0], 5))
+        if y < 7 and get_piece_at(x, y+1, pieces) == "":
+            # The pawn can move one square forward
+            possible_moves.append((x, y+1))
+            
+            if y == 1:
+                # If the pawn is on its starting square, it can move two squares forward
+                if get_piece_at(x, y+2, pieces) == "":
+                    possible_moves.append((x, y+2))
+        if x > 0 and y < 7:
+            take_piece = get_piece_at(x-1, y+1, pieces)
+            if take_piece != "" and take_piece[0] == "w":
+                # The pawn can capture an enemy piece to its left
+                possible_moves.append((x-1, y+1))
+        if x < 7 and y < 7:
+            take_piece = get_piece_at(x+1, y+1, pieces)
+            if take_piece != "" and take_piece[0] == "w":
+                # The pawn can capture an enemy piece to its left
+                possible_moves.append((x+1, y+1))
+        return possible_moves, en_passant
+
 def move_king(piece_name, pieces, x, y):
     # King
     possible_moves = []
@@ -160,59 +221,4 @@ def move_bishop(piece_name, pieces, x, y):
         else:
             br = False
     return possible_moves
-            
-            
-
-def move_pawn(piece_name, pieces, x, y):
-    # Determine the type of piece
-    if piece_name == "wp":
-        # White pawn
-        possible_moves = []
-        print(print_board(pieces))
-        print(x, y)
-        if y > 0 and get_piece_at(x, y-1, pieces) == "":
-            # The pawn can move one square forward
-            possible_moves.append((x, y-1))
-            
-            if y == 6:
-                # If the pawn is on its starting square, it can move two squares forward
-                if get_piece_at(x, y-2, pieces) == "":
-                    possible_moves.append((x, y-2))
-        if x > 0 and y > 0:
-            take_piece = get_piece_at(x-1, y-1, pieces)
-            if take_piece != "" and take_piece[0] == "b":
-                # The pawn can capture an enemy piece to its left
-                possible_moves.append((x-1, y-1))
-        if x < 7 and y > 0:
-            take_piece = get_piece_at(x+1, y-1, pieces)
-            if take_piece != "" and take_piece[0] == "b":
-                # The pawn can capture an enemy piece to its left
-                possible_moves.append((x+1, y-1))
-        return possible_moves
-
-    elif piece_name == "bp":
-        # Black pawn
-        possible_moves = []
-        print(x, y)
-        if y < 7 and get_piece_at(x, y+1, pieces) == "":
-            # The pawn can move one square forward
-            possible_moves.append((x, y+1))
-            
-            if y == 1:
-                # If the pawn is on its starting square, it can move two squares forward
-                if get_piece_at(x, y+2, pieces) == "":
-                    possible_moves.append((x, y+2))
-        if x > 0 and y < 7:
-            take_piece = get_piece_at(x-1, y+1, pieces)
-            if take_piece != "" and take_piece[0] == "w":
-                # The pawn can capture an enemy piece to its left
-                possible_moves.append((x-1, y+1))
-        if x < 7 and y < 7:
-            take_piece = get_piece_at(x+1, y+1, pieces)
-            if take_piece != "" and take_piece[0] == "w":
-                # The pawn can capture an enemy piece to its left
-                possible_moves.append((x+1, y+1))
-        return possible_moves
-
-
 
