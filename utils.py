@@ -79,21 +79,183 @@ def move_pawn(piece_name, pieces, x, y, last_move):
         return possible_moves, en_passant
 
 def check_ksc(piece_name, pieces):
-    ksc = [(5, 7), (6, 7)] if piece_name[0] == "w" else [(5, 0), (6, 0)]
+    team = piece_name[0]
+    ksc = [(5, 7), (6, 7)] if team == "w" else [(5, 0), (6, 0)]
+    oppo = "b" if team == "w" else "w"
         
     # Check that the spaces are free
     for p_x, p_y in ksc:
         if get_piece_at(p_x, p_y, pieces) != "":
             return None
+
+    for i in range(2):
+        x, y = ksc[i]
+
+        # Check knight moves
+        knight_moves = [(1, -2), (2, -1), (-1, -2), (-2, -1)] if team == "w" else [(1, 2), (2, 1), (-1, 2), (-2, 1)]
+        for move in knight_moves:
+            new_x = x + move[0]
+            new_y = y + move[1]
+            if new_x >= 0 and new_x <= 7:
+                if get_piece_at(new_x, new_y, pieces) == oppo + "n":
+                    return None
+
+        # Check pawn and king moves
+        pawn_moves = [(1, -1), (-1, -1)] if team == "w" else [(1, 1), (-1, 1)]
+        for move in pawn_moves:
+            new_x = x + move[0]
+            new_y = y + move[1]
+            p = get_piece_at(new_x, new_y, pieces)
+            if p == oppo + "p" or p == oppo + "k":
+                return None
+
+        # Check final king move
+        new_x = x
+        new_y = y + (-1 if team == "w" else 1)
+        p = get_piece_at(new_x, new_y, pieces)
+        if p == oppo + "k":
+            return None
+        
+        # Top left, top, top right
+        tl, t, tr = True, True, True
+        
+        dir = -1 if team == "w" else 1
+        
+        for i in range(1, 8):
+            if tl:
+                new_x = x - i
+                new_y = y + dir*i
+
+                if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        tl = False
+                    elif p == oppo + "b" or p == oppo + "q":
+                        return None
+                    else:
+                        tl = False
+
+            if t:
+                new_x = x
+                new_y = y + dir*i
+
+                if new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        t = False
+                    elif p == oppo + "r" or p == oppo + "q":
+                        return None
+                    else:
+                        t = False
+            
+            if tr:
+                new_x = x + i
+                new_y = y + dir*i
+
+                if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        tr = False
+                    elif p == oppo + "b" or p == oppo + "q":
+                        return None
+                    else:
+                        tr = False
+
     return ksc[1]
 
 def check_qsc(piece_name, pieces):
-    qsc = [(1, 7), (2, 7),(3, 7)] if piece_name[0] == "w" else [(1, 0), (2, 0), (3, 0)]
+    team = piece_name[0]
+    qsc = [(1, 7), (2, 7),(3, 7)] if team == "w" else [(1, 0), (2, 0), (3, 0)]
+    oppo = "b" if team == "w" else "w"
         
     # Check that the spaces are free
     for p_x, p_y in qsc:
         if get_piece_at(p_x, p_y, pieces) != "":
             return None
+
+    for i in range(3):
+        x, y = qsc[i]
+        
+        knight_moves = [(1, -2), (2, -1), (-1, -2), (-2, -1)] if team == "w" else [(1, 2), (2, 1), (-1, 2), (-2, 1)]
+        for move in knight_moves:
+            new_x = x + move[0]
+            new_y = y + move[1]
+            if new_x >= 0 and new_x <= 7:
+                if get_piece_at(new_x, new_y, pieces) == oppo + "n":
+                    return None
+
+        # Check pawn and king moves
+        pawn_moves = [(1, -1), (-1, -1)] if team == "w" else [(1, 1), (-1, 1)]
+        for move in pawn_moves:
+            new_x = x + move[0]
+            new_y = y + move[1]
+            p = get_piece_at(new_x, new_y, pieces)
+            if p == oppo + "p" or p == oppo + "k":
+                return None
+
+        # Check final king move
+        new_x = x
+        new_y = y + (-1 if team == "w" else 1)
+        p = get_piece_at(new_x, new_y, pieces)
+        if p == oppo + "k":
+            return None
+        
+        # Top left, top, top right
+        tl, t, tr = True, True, True
+        
+        dir = -1 if team == "w" else 1
+        
+        for i in range(1, 8):
+            if tl:
+                new_x = x - i
+                new_y = y + dir*i
+
+                if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        tl = False
+                    elif p == oppo + "b" or p == oppo + "q":
+                        return None
+                    else:
+                        tl = False
+
+            if t:
+                new_x = x
+                new_y = y + dir*i
+
+                if new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        t = False
+                    elif p == oppo + "r" or p == oppo + "q":
+                        return None
+                    else:
+                        t = False
+            
+            if tr:
+                new_x = x + i
+                new_y = y + dir*i
+
+                if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                    p = get_piece_at(new_x, new_y, pieces)
+                    if p == "":
+                        pass
+                    elif p[0] == team:
+                        tr = False
+                    elif p == oppo + "b" or p == oppo + "q":
+                        return None
+                    else:
+                        tr = False
     return qsc[1]
 
 def move_king(piece_name, pieces, x, y, castle_state):
