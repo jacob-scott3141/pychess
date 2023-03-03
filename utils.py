@@ -17,6 +17,162 @@ def is_opposition(piece, oppo):
         return True
     return False
 
+def isInCheck(king, pieces, isWhite):
+    team = "w" if isWhite else "b"
+    oppo = "b" if isWhite else "w"
+    x, y = king
+
+    # Check knight moves
+    knight_moves = [(1, 2), (2, 1), (-1, 2), (-2, 1), (1, -2), (2, -1), (-1, -2), (-2, -1)]
+    for move in knight_moves:
+        new_x = x + move[0]
+        new_y = y + move[1]
+        if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+            if get_piece_at(new_x, new_y, pieces) == oppo + "n":
+                return True
+
+    # Check pawn
+    pawn_moves = [(1, -1), (-1, -1)] if team == "w" else [(1, 1), (-1, 1)]
+    for move in pawn_moves:
+        new_x = x + move[0]
+        new_y = y + move[1]
+        p = get_piece_at(new_x, new_y, pieces)
+        if p == oppo + "p":
+            return True
+
+    # Check king
+    king_moves = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
+    for move in pawn_moves:
+        new_x = x + move[0]
+        new_y = y + move[1]
+        if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+            p = get_piece_at(new_x, new_y, pieces)
+            if p == oppo + "p":
+                return True
+    
+    # Top left, top, top right
+    tl, tr, bl, br, t, r, l, b = True, True, True, True, True, True, True, True
+    
+    for i in range(1, 8):
+        if tl:
+            new_x = x - i
+            new_y = y + i
+
+            if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    tl = False
+                elif p == oppo + "b" or p == oppo + "q":
+                    return True
+                else:
+                    tl = False
+
+        if t:
+            new_x = x
+            new_y = y + i
+
+            if new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    t = False
+                elif p == oppo + "r" or p == oppo + "q":
+                    return True
+                else:
+                    t = False
+        
+        if tr:
+            new_x = x + i
+            new_y = y + i
+
+            if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    tr = False
+                elif p == oppo + "b" or p == oppo + "q":
+                    return True
+                else:
+                    tr = False
+        if bl:
+            new_x = x - i
+            new_y = y - i
+
+            if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    bl = False
+                elif p == oppo + "b" or p == oppo + "q":
+                    return True
+                else:
+                    bl = False
+
+        if b:
+            new_x = x
+            new_y = y - i
+
+            if new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    b = False
+                elif p == oppo + "r" or p == oppo + "q":
+                    return True
+                else:
+                    b = False
+        
+        if br:
+            new_x = x + i
+            new_y = y - i
+
+            if new_x >= 0 and new_x <= 7 and new_y >= 0 and new_y <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    br = False
+                elif p == oppo + "b" or p == oppo + "q":
+                    return True
+                else:
+                    br = False
+
+        if l:
+            new_x = x - i
+            new_y = y
+
+            if new_x >= 0 and new_x <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    l = False
+                elif p == oppo + "r" or p == oppo + "q":
+                    return True
+                else:
+                    l = False
+        if r:
+            new_x = x + i
+            new_y = y
+
+            if new_x >= 0 and new_x <= 7:
+                p = get_piece_at(new_x, new_y, pieces)
+                if p == "":
+                    pass
+                elif p[0] == team:
+                    r = False
+                elif p == oppo + "r" or p == oppo + "q":
+                    return True
+                else:
+                    r = False
+    return False
+
 def move_pawn(piece_name, pieces, x, y, last_move):
     en_passant = (None, None, None)
     # Determine the type of piece

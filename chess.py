@@ -1,5 +1,6 @@
 import pygame
 import utils
+import copy
 
 # Initialize Pygame
 pygame.init()
@@ -120,6 +121,9 @@ en_passant = (None, None, None)
 castle = [(None, None, None), (None, None, None)]
 white_castle = [True, True]
 black_castle = [True, True]
+black_king = (4, 0)
+white_king = (4, 7)
+possible_king = (None, None)
 
 # Define variables for tracking player turn
 isWhite = True
@@ -180,14 +184,28 @@ while True:
                 new_piece_name = pieces[board_y * 8 + board_x]
                 new_piece_position = (board_x, board_y)
 
+                # Deep copy the board and make sure king isn't in check
+                new_pieces = copy.deepcopy(pieces)
+                new_pieces[board_y * 8 + board_x] = current_piece
+                new_pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
+                last_move = (current_piece, current_piece_position, new_piece_position)
+                
+                king = white_king if isWhite else black_king
+                if current_piece[1] == "k":
+                    king = (board_x, board_y)
+                inCheck = utils.isInCheck(king, new_pieces, isWhite)
+
+                log("King is in check: " + str(inCheck))
+
                 # If the move is legal
-                if (board_x, board_y) in possible_positions:
-                    pieces[board_y * 8 + board_x] = current_piece
-                    pieces[current_piece_position[1] * 8 + current_piece_position[0]] = ""
+                if (board_x, board_y) in possible_positions and not inCheck:
+                    pieces = new_pieces
                     last_move = (current_piece, current_piece_position, new_piece_position)
 
-                    # Check castling
+                    # Check castling and update king pos
                     if isWhite:
+                        if current_piece[1] == "k":
+                            white_king = (board_x, board_y)
                         if white_castle[0] and current_piece == "wr" and current_piece_position == (7,7):
                             white_castle[0] = False
                         elif white_castle[1] and current_piece == "wr" and current_piece_position == (0,7):
@@ -195,6 +213,8 @@ while True:
                         elif (white_castle[0] and white_castle[1]) and current_piece == "wk":
                             white_castle = (False, False)
                     else:
+                        if current_piece[1] == "k":
+                            black_king = (board_x, board_y)
                         if black_castle[0] and current_piece == "br" and current_piece_position == (7,0):
                             black_castle[0] = False
                         if black_castle[1] and current_piece == "br" and current_piece_position == (0,0):
