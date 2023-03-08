@@ -327,7 +327,7 @@ def check_ksc(piece_name, pieces):
 
 def check_qsc(piece_name, pieces):
     team = piece_name[0]
-    qsc = [(1, 7), (2, 7),(3, 7)] if team == "w" else [(1, 0), (2, 0), (3, 0)]
+    qsc = [(2, 7), (3, 7)] if team == "w" else [(2, 0), (3, 0)]
     oppo = "b" if team == "w" else "w"
         
     # Check that the spaces are free
@@ -335,7 +335,7 @@ def check_qsc(piece_name, pieces):
         if get_piece_at(p_x, p_y, pieces) != "":
             return None
 
-    for i in range(3):
+    for i in range(2):
         x, y = qsc[i]
         
         knight_moves = [(1, -2), (2, -1), (-1, -2), (-2, -1)] if team == "w" else [(1, 2), (2, 1), (-1, 2), (-2, 1)]
@@ -412,7 +412,7 @@ def check_qsc(piece_name, pieces):
                         return None
                     else:
                         tr = False
-    return qsc[1]
+    return qsc[0]
 
 def move_king(piece_name, pieces, x, y, castle_state):
     castle = [(None, None, None), (None, None, None)]

@@ -109,8 +109,8 @@ def draw():
     for c in circles:
         screen.blit(circle, c)
 
-# Update the display
-pygame.display.flip()
+    # Update the display
+    pygame.display.flip()
 
 # Define variables for tracking the current piece and its position
 last_move = (None, None, None)
@@ -262,7 +262,5 @@ while True:
                 print("\n" + utils.print_board(pieces) + "\n0---------------------0")
 
     draw()
-                
-    pygame.display.flip()
     
 
